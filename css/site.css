@@ -1,0 +1,39 @@
+html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+#sidebar {
+    background: #2a2c36;
+    color: #eeeeee;
+    position: fixed;
+    height: 100%;
+    width: 300px;
+    overflow: auto;
+    top: 50px;
+    left: 0;
+    margin: 0;
+}
+#sidebar .attraction {
+    font-size: 16px;
+}
+#sidebar .info {
+    font-size: 12px;
+}
+.nav>li>a:hover {
+    color: #337ab7;
+}
+#main {
+    position: relative;
+    height: 100%;
+    margin: 0 0 0 300px;
+    top: 50px;
+    overflow: auto;
+}
+#main.container-fluid {
+    padding-left: 0;
+    padding-right: 0;
+}
+#map {
+    min-height: 100%;
+}
