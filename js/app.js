@@ -28,31 +28,63 @@ var ViewModel = function() {
                 map: map,
                 animation: google.maps.Animation.DROP
             })
-            restaurant.marker = marker;
+            restaurant.marker(marker);
             google.maps.event.addListener(restaurant.marker, 'click', function() {
-                restaurant.marker.setAnimation(google.maps.Animation.BOUNCE);
+                restaurant.marker().setAnimation(google.maps.Animation.BOUNCE);
                 setTimeout(function() {
-                    restaurant.marker.setAnimation(null);
+                    restaurant.marker().setAnimation(null);
                 }, 1400);
             })
         })
     });
     // set up search functionality
     self.query = ko.observable('');
-    self.search = function(value) {
-        self.restaurantList.removeAll();
-        restaurantsFromGoogle.forEach(function(restaurant) {
-            if(restaurant.name.toLowerCase().indexOf(value.toLowerCase()) >= 0) {
-                restaurant.marker.setMap(map);
-                self.restaurantList.push(new Restaurant(restaurant));
-            }
-        });
-    }
-    self.query.subscribe(self.search);
+    // self.search = function(value) {
+    //     self.restaurantList.forEach(function(restaurant) {
+    //         restaurant.visible(false);
+    //         restaurant.marker.setMap(null);
+    //         if(restaurant.name.toLowerCase().indexOf(value.toLowerCase()) >= 0) {
+    //             restaurant.marker.setMap(map);
+    //             restaurant.visible(true);
+    //             //self.restaurantList.push(new Restaurant(restaurant));
+    //         }
+    //     });
+    // }
+    //self.query.subscribe(self.search);
 
     self.selectRestaurant = function(restaurant) {
         google.maps.event.trigger(restaurant.marker, 'click');
     }
+
+    // self.filteredRestaurants = ko.computed(function() {
+    //     var filter = self.query(), arr = [];
+    //     if (filter) {
+    //         ko.utils.arrayForEach(self.restaurantList(), function(restaurant) {
+    //             if(restaurant.name.toLowerCase().indexOf(filter.toLowerCase()) >= 0) {
+    //                 arr.push(restaurant);
+    //             }
+    //         });
+    //     } else {
+    //         arr = self.restaurantList();
+    //     }
+    //     return arr;
+    // });
+
+    self.filteredRestaurants = ko.computed(function() {
+        var filter = self.query().toLowerCase();
+        if (!filter) {
+            return self.restaurantList();
+        } else {
+            return ko.utils.arrayFilter(self.restaurantList(), function(item) {
+                if (item.name().toLowerCase().indexOf(filter) >= 0) {
+                    item.marker().setMap(map);
+                    return item;
+                } else {
+                    item.marker().setMap(null);
+                }
+            });
+        }   
+    }, self);
 
 }
 // Load Google Maps

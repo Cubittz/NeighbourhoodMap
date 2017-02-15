@@ -36,7 +36,7 @@
         </div>
     </nav>
     <div id="sidebar">
-        <ul class="nav" id="attraction-list" data-bind="foreach: restaurantList">
+        <ul class="nav" id="attraction-list" data-bind="foreach: filteredRestaurants">
             <li>
                 <a class="btn btn-primary" data-bind="click: $parent.selectRestaurant" >
                     <div class="text-left attraction" data-bind="text: name"></div>
