@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Matlock Restaurants</title>
+        <title>Matlock Pub Crawl!</title>
         <!-- js resources -->
         <script src="js/resources/knockout-min-3.4.1.js"></script>
         <script src="js/resources/jquery.min.js"></script>
@@ -24,22 +24,22 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <span class="navbar-brand">Matlock Restaurant Map</span>
+                <span class="navbar-brand">Matlock Pub Crawl!</span>
             </div>
             <div class="collapse navbar-collapse">
                 <ul class="nav navbar-nav">
                     <li class="active">
-                        <input placeholder="Search..." class="form-control" type="search" data-bind="textInput: query">
+                        <input placeholder="Search Pubs..." class="form-control" type="search" data-bind="textInput: query">
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
     <div id="sidebar">
-        <ul class="nav" id="attraction-list" data-bind="foreach: filteredRestaurants">
+        <ul class="nav" id="pub-list" data-bind="foreach: filteredPubs">
             <li>
-                <a class="btn btn-primary" data-bind="click: $parent.selectRestaurant" >
-                    <div class="text-left attraction" data-bind="text: name"></div>
+                <a class="btn btn-primary" data-bind="click: $parent.selectPub" >
+                    <div class="text-left pub" data-bind="text: name"></div>
                     <div class="text-left info" data-bind="text: address"></div>
                 </a>
             </li>
