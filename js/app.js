@@ -59,9 +59,7 @@ var ViewModel = function() {
             self.pubList.push(new Pub(pub));
         });
         var marker;
-        var infowindow = new google.maps.InfoWindow({
-            width: 800
-        });
+        var infowindow = new google.maps.InfoWindow();
         self.pubList().forEach(function(pub) {
             // get detailed foursquare info
             var venueUrl = 'https://api.foursquare.com/v2/venues/' + pub.id() + '?client_id=' + CLIENT_ID + '&client_secret=' + CLIENT_SECRET + '&v=20170216&m=foursquare';
@@ -86,7 +84,6 @@ var ViewModel = function() {
                 if(pubInfo.hasOwnProperty('canonicalUrl')) {
                     pub.canonicalUrl(pubInfo.canonicalUrl);
                 };
-                console.log(pubInfo);
                 // add google pin marker to map for each pub
                 marker = new google.maps.Marker({
                     position: new google.maps.LatLng(pub.lat(), pub.lng()),
