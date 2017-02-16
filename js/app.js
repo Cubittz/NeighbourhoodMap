@@ -1,16 +1,20 @@
-//var googlePlacesUrl = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=53.139,-1.55&radius=1500&type=restaurant&key=AIzaSyDgskGYx4SlVQAXvhC3T_eWIZpHIrMabPw"
 var CLIENT_ID = 'IAEI3UW22HFDWDRJTFACXTHNTONSUEBJ5SUAOGQ3GNZHGFBJ';
 var CLIENT_SECRET = 'ENP0YSSI3CTW52DMSO1QN5O4IN5FAPCCABGB4MEHV5AFRGYH';
 var fourSquareUrl = 'https://api.foursquare.com/v2/venues/explore?ll=53.139,-1.55&radius=2500'
     + '&client_id=' + CLIENT_ID + '&client_secret=' + CLIENT_SECRET
-    + '&v=20170216&m=foursquare&query=pub'
-
+    + '&v=20170216&m=foursquare&query=pub';
+//model
 var Pub = function(data) {
     var pub = this;
     pub.id = ko.observable(data.venue.id)
     pub.name = ko.observable(data.venue.name);
     pub.lat = ko.observable(data.venue.location.lat);
     pub.lng = ko.observable(data.venue.location.lng);
+    pub.description = ko.observable('');
+    pub.phone = ko.observable('');
+    pub.rating = ko.observable('N/A');
+    pub.price = ko.observable('');
+    pub.canonicalUrl = ko.observable('');
     // address elements as not many venues have formatted address
     pub.address1 = ko.observable();
     pub.address2 = ko.observable();
@@ -26,10 +30,23 @@ var Pub = function(data) {
     // google maps marker and infowindow
     pub.marker = ko.observable();
     pub.infowindow = ko.computed(function() {
-        return "<div><h4>" + pub.name() + "</h4><img height='110' width='110' src='" + pub.image() + "' alt='Photo of Pub'></div>";
+        var contentString = '<div id="iw-container">' +
+                                '<div class="iw-title">' + pub.name() + '</div>' +
+                                '<div class="iw-content">' +
+                                    '<div class="iw-subTitle">Details from Foursquare</div>' +
+                                    '<img src="' + pub.photoPrefix() + '110x110' + pub.photoSuffix() + '" alt="Pub Photo">' +
+                                    '<p>' + pub.phone() + '</p>' +
+                                    '<p>' + pub.address() + '</p>' +
+                                    '<p>' + pub.description() + '</p>' +
+                                    '<p>Rating: ' + pub.rating() + '</p>' +
+                                    '<p>Price: ' + pub.price() + '</p>' +
+                                    '<p><a target="_blank" href=' + pub.canonicalUrl() + '>Look me up on Foursquare</a></p>' +
+                                '</div>' +
+                            '</div>';
+        return contentString;
     })
 };
-
+//viewmodel
 var ViewModel = function() {
     var self = this;
 
@@ -43,18 +60,33 @@ var ViewModel = function() {
         });
         var marker;
         var infowindow = new google.maps.InfoWindow({
-            maxWidth: 400,
+            width: 800
         });
         self.pubList().forEach(function(pub) {
             // get detailed foursquare info
             var venueUrl = 'https://api.foursquare.com/v2/venues/' + pub.id() + '?client_id=' + CLIENT_ID + '&client_secret=' + CLIENT_SECRET + '&v=20170216&m=foursquare';
             $.getJSON(venueUrl, function(data) {
                 pubInfo = data.response.venue;
+                if(pubInfo.contact.hasOwnProperty('formattedPhone')) {
+                    pub.phone(pubInfo.contact.formattedPhone);
+                };
                 pub.address1(pubInfo.location.formattedAddress[0]);
                 pub.address2(pubInfo.location.formattedAddress[1]);
                 pub.photoPrefix(pubInfo.bestPhoto.prefix);
                 pub.photoSuffix(pubInfo.bestPhoto.suffix);
-
+                if(pubInfo.hasOwnProperty('description')) {
+                    pub.description(pubInfo.description);
+                };
+                if(pubInfo.price.hasOwnProperty('message')) {
+                    pub.price(pubInfo.price.message);
+                };
+                if(pubInfo.hasOwnProperty('rating')) {
+                    pub.rating(pubInfo.rating);
+                };
+                if(pubInfo.hasOwnProperty('canonicalUrl')) {
+                    pub.canonicalUrl(pubInfo.canonicalUrl);
+                };
+                console.log(pubInfo);
                 // add google pin marker to map for each pub
                 marker = new google.maps.Marker({
                     position: new google.maps.LatLng(pub.lat(), pub.lng()),
@@ -65,6 +97,7 @@ var ViewModel = function() {
                 pub.marker(marker);
                 // add animation to markers when clicked
                 google.maps.event.addListener(pub.marker(), 'click', function() {
+                    map.panTo(pub.marker().getPosition());
                     pub.marker().setAnimation(google.maps.Animation.BOUNCE);
                     setTimeout(function() {
                         pub.marker().setAnimation(null);
@@ -82,6 +115,8 @@ var ViewModel = function() {
     // function to simulate clicking on marker when item clicked in list
     self.selectPub = function(pub) {
         google.maps.event.trigger(pub.marker(), 'click');
+        // collapse sidebar after selection for mobile devices
+        $('.navbar-collapse').collapse('toggle');
     }
 
     // set up search functionality
