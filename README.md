@@ -8,6 +8,7 @@ All required files and dependencies are included in the repository, so can be cl
 
 ### Credits
 Location data provided by Foursquare.
-Mapping proivided by Google.
+
+Mapping provided by Google.
 
 Thanks to Miguel Marnato for tips on styling Google Maps InfoWindow - http://en.marnoto.com/2014/09/5-formas-de-personalizar-infowindow.html
