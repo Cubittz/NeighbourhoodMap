@@ -55,6 +55,8 @@ var ViewModel = function() {
     // retrieve data from google
     $.getJSON(fourSquareUrl, function(data) {
         pubsFromFoursquare = data.response.groups[0].items;
+    })
+    .done(function() {
         pubsFromFoursquare.forEach(function(pub) {
             self.pubList.push(new Pub(pub));
         });
@@ -115,6 +117,11 @@ var ViewModel = function() {
                 self.filteredPubs.push(pub);
             });
         })
+    })
+    .fail(function() {
+        var $error = $('#error');
+        $error.html("Error Loading Data from FourSquare");
+        $error.addClass("show-error");
     });
 
     // function to simulate clicking on marker when item clicked in list
