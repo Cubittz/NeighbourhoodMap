@@ -65,6 +65,8 @@ var ViewModel = function() {
             var venueUrl = 'https://api.foursquare.com/v2/venues/' + pub.id() + '?client_id=' + CLIENT_ID + '&client_secret=' + CLIENT_SECRET + '&v=20170216&m=foursquare';
             $.getJSON(venueUrl, function(data) {
                 pubInfo = data.response.venue;
+            })
+            .done(function() {
                 if(pubInfo.contact.hasOwnProperty('formattedPhone')) {
                     pub.phone(pubInfo.contact.formattedPhone);
                 };
@@ -84,6 +86,13 @@ var ViewModel = function() {
                 if(pubInfo.hasOwnProperty('canonicalUrl')) {
                     pub.canonicalUrl(pubInfo.canonicalUrl);
                 };
+            })
+            .fail(function() {
+                var $error = $('#error');
+                $error.html("Error Loading Venue Detail from FourSquare");
+                $error.addClass("show-error");
+            })
+            .always(function(){
                 // add google pin marker to map for each pub
                 marker = new google.maps.Marker({
                     position: new google.maps.LatLng(pub.lat(), pub.lng()),
@@ -101,11 +110,10 @@ var ViewModel = function() {
                     }, 1400);
                     infowindow.setContent(pub.infowindow());
                     infowindow.open(map, this);
-                })
+                });
                 // push all restaurants out to filteredRestaurant array for initial load
                 self.filteredPubs.push(pub);
             });
-
         })
     });
 
