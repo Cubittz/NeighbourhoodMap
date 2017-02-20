@@ -1,18 +1,12 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta charset="utf-8" />
+        <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Matlock Pub Crawl!</title>
-        <!-- js resources -->
-        <script src="js/resources/knockout-min-3.4.1.js"></script>
-        <script src="js/resources/jquery.min.js"></script>
-        <script src="js/resources/bootstrap.min.js"></script>
-
-
         <!-- css resources -->
-        <link href="css/bootstrap.min.css" rel="stylesheet" />
-        <link href="css/site.css" rel="stylesheet" />
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <link href="css/site.css" rel="stylesheet">
     </head>
     <body>
     <nav class="navbar navbar-inverse navbar-fixed-top" id="titleBar">
@@ -41,11 +35,16 @@
             </div>
         </div>
     </nav>
-    <div id="main" class="container-fluid">
+    <main id="main" class="container-fluid">
         <div id="map"></div>
-        <div id="error"></div>
-    </div>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDgskGYx4SlVQAXvhC3T_eWIZpHIrMabPw&callback=initMap" async defer></script>
+        <div id="error" data-bind="css: { 'show-error': errorMessage }"><span data-bind="text: errorMessage"></span></div>
+    </main>
+    <!-- js resources -->
+    <script src="js/resources/knockout-min-3.4.1.js"></script>
+    <script src="js/resources/jquery.min.js"></script>
+    <script src="js/resources/bootstrap.min.js"></script>
+
     <script src="js/app.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDgskGYx4SlVQAXvhC3T_eWIZpHIrMabPw&callback=initMap" async defer onerror="mapError()"></script>
     </body>
 </html>

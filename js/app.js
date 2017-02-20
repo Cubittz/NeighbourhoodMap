@@ -27,9 +27,9 @@ var Pub = function(data) {
     pub.image = ko.computed(function() {
         return pub.photoPrefix() + '110x110' + pub.photoSuffix();
     })
-    // google maps marker and infowindow
+    // google maps marker and infowindow content
     pub.marker = ko.observable();
-    pub.infowindow = ko.computed(function() {
+    pub.infowindowContent = ko.computed(function() {
         var contentString = '<div id="iw-container">' +
                                 '<div class="iw-title">' + pub.name() + '</div>' +
                                 '<div class="iw-content">' +
@@ -61,7 +61,6 @@ var ViewModel = function() {
             self.pubList.push(new Pub(pub));
         });
         var marker;
-        var infowindow = new google.maps.InfoWindow();
         self.pubList().forEach(function(pub) {
             // get detailed foursquare info
             var venueUrl = 'https://api.foursquare.com/v2/venues/' + pub.id() + '?client_id=' + CLIENT_ID + '&client_secret=' + CLIENT_SECRET + '&v=20170216&m=foursquare';
@@ -90,9 +89,7 @@ var ViewModel = function() {
                 };
             })
             .fail(function() {
-                var $error = $('#error');
-                $error.html("Error Loading Venue Detail from FourSquare");
-                $error.addClass("show-error");
+                logError("Error Loading Venue Detail from FourSquare");
             })
             .always(function(){
                 // add google pin marker to map for each pub
@@ -110,7 +107,7 @@ var ViewModel = function() {
                     setTimeout(function() {
                         pub.marker().setAnimation(null);
                     }, 1400);
-                    infowindow.setContent(pub.infowindow());
+                    infowindow.setContent(pub.infowindowContent());
                     infowindow.open(map, this);
                 });
                 // push all restaurants out to filteredRestaurant array for initial load
@@ -119,9 +116,7 @@ var ViewModel = function() {
         })
     })
     .fail(function() {
-        var $error = $('#error');
-        $error.html("Error Loading Data from FourSquare");
-        $error.addClass("show-error");
+        logError("Error Loading Data from FourSquare");
     });
 
     // function to simulate clicking on marker when item clicked in list
@@ -140,17 +135,24 @@ var ViewModel = function() {
         var filter = self.query().toLowerCase();
         self.filteredPubs.removeAll();
         self.pubList().forEach(function(pub) {
-            pub.marker().setMap(null);
+            pub.marker().setVisible(false);
             if(pub.name().toLowerCase().indexOf(filter) >= 0) {
                 self.filteredPubs.push(pub);
             }
         });
         self.filteredPubs().forEach(function(pub) {
-            pub.marker().setMap(map);
+            pub.marker().setVisible(true);
         });
     };
     // subscribe the search query to the runFilter function
     self.query.subscribe(self.runFilter);
+
+    //Error Handling
+    self.errorMessage = ko.observable();
+
+    function logError(message) {
+        self.errorMessage(message);
+    };
 }
 
 // Load Google Maps and kick off ViewModel
@@ -160,5 +162,15 @@ function initMap() {
         center: {lat: 53.129, lng: -1.55},
         zoom: 14
     });
-    ko.applyBindings(new ViewModel());
+    infowindow = new google.maps.InfoWindow();
+
+    var vm = new ViewModel();
+    ko.applyBindings(vm);
 }
+
+function mapError() {
+    var $error = $('#error');
+    $error.addClass('show-error');
+    $error.html("Error Loading Google Maps");
+}
+
